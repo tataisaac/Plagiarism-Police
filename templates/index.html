@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plagiarism Police</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Plagiarism Police</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        Document 1: <input type="file" name="file1" required><br><br>
+        Document 2: <input type="file" name="file2" required><br><br>
+        Text block Size: <input type="number" name="window_size" value="20" required><br><br>
+        Sensitivity (0-1): <input type="number" name="threshold" value="0.8" required><br><br>
+        <button type="submit">Compare</button>
+        
+        <div id="result"></div>
+    </form>
+
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = `
+                    <p>Similarity: ${data.similarity_score.toFixed(2)}. ${data.are_similar ? 'Oh snap!!! Documents are similar' : 'Documents are not similar'}.</p>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>
