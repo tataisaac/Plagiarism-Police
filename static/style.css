@@ -63,6 +63,10 @@ button {
 
 button:hover {
     background-color: #0056b3;
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px); /* Slight vertical lift */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
 }
 
 #result {
@@ -83,3 +87,34 @@ button:hover {
     font-size: 1.1em; /* Increase font size */
     color: #333; /* Darker text color */
 }
+
+/*animation for advance compare filed
+#advancedInputs {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.9s ease-in-out; /* Smooth transition 
+}
+
+#advancedInputs.show {
+    max-height: 500px; /* Adjust as needed 
+}*/
+
+#advancedInputs {
+    display: none;
+    margin-top: 10px;
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center; /* Center elements horizontally */
+}
+
+#advancedInputs > div:first-child { /* Select the flex container */
+    display: flex;
+    justify-content: center; /* Center flex items horizontally */
+}
+
+#advancedInputs > div:first-child > div { /* Select flex items */
+    margin: 0 5px; /* Add some horizontal margin between items */
+}
+
