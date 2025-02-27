@@ -4,8 +4,13 @@ import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+import PyPDF2
+import docx
+from werkzeug.exceptions import RequestEntityTooLarge #Import exception
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # 4MB limit #Upload a max of 4MB for comparison
+
 
 # Download NLTK resources (do this once, if needed)
 try:
@@ -56,35 +61,64 @@ def compare_documents_rolling_hash(doc1, doc2, window_size=20, threshold=0.8):
     return similarity >= threshold, similarity
 
 def read_file(file):
-    """Reads the content of an uploaded file."""
-    if file:
+    """Reads the content of an uploaded file, handling different file types."""
+    if not file:
+        return ""
+
+    filename = file.filename
+
+    if filename.lower().endswith('.txt'):
         return file.read().decode('utf-8')
-    return ""
+    elif filename.lower().endswith('.pdf'):
+        try:
+            pdf_reader = PyPDF2.PdfReader(file.read())
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text() or ""
+            return text
+        except Exception as e:
+            return f"Error reading PDF: {e}"
+    elif filename.lower().endswith('.docx'):
+        try:
+            doc = docx.Document(file.read())
+            text = ""
+            for paragraph in doc.paragraphs:
+                text += paragraph.text + "\n"
+            return text
+        except Exception as e:
+            return f"Error reading DOCX: {e}"
+    else:
+        return "Unsupported file type"
+    
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'POST':
-        file1 = request.files['file1']
-        file2 = request.files['file2']
-        window_size = int(request.form['window_size'])
-        threshold = float(request.form['threshold'])
+    try:
+        if request.method == 'POST':
+            file1 = request.files['file1']
+            file2 = request.files['file2']
+            window_size = int(request.form['window_size'])
+            threshold = float(request.form['threshold'])
 
-        doc1_content = read_file(file1)
-        doc2_content = read_file(file2)
+            doc1_content = read_file(file1)
+            doc2_content = read_file(file2)
 
-        doc1_processed = preprocess_text(doc1_content)
-        doc2_processed = preprocess_text(doc2_content)
+            doc1_processed = preprocess_text(doc1_content)
+            doc2_processed = preprocess_text(doc2_content)
 
-        are_similar, similarity_score = compare_documents_rolling_hash(doc1_processed, doc2_processed, window_size, threshold)
+            are_similar, similarity_score = compare_documents_rolling_hash(doc1_processed, doc2_processed, window_size, threshold)
 
-        result = {
-            'similarity_score': similarity_score,
-            'are_similar': are_similar
-        }
+            result = {
+                'similarity_score': similarity_score,
+                'are_similar': are_similar
+            }
 
-        return jsonify(result)
+            return jsonify(result)
 
-    return render_template('index.html')
+        return render_template('index.html')
+
+    except RequestEntityTooLarge:
+        return jsonify({'error': 'File size exceeded 4MB limit'}), 413
 
 if __name__ == '__main__':
     app.run(debug=True)
