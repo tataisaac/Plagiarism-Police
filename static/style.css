@@ -1,41 +1,27 @@
 body {
-    font-family: sans-serif;
+    font-family: 'Georgia', serif;
     margin: 20px;
-    background-color: #f4f4f4;
-    position: relative; /* Needed for absolute positioning of the image */
+    background-color: #282c34;
+    color: #e0e0e0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative;
 }
 
 h1 {
     text-align: center;
-    color: #333;
+    color: #ffb74d;
 }
 
 form {
     width: 400px;
     margin: 20px auto;
-    background-color: #fff;
+    background-color: #3e4451;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: relative; /* Needed for stacking context */
-    z-index: 1; /* Ensure the form is above the background image */
-}
-
-/* Adding the background image */
-body::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /*Center the image*/
-    width: 100%;
-    height: 100%;
-    background-color: #00000009;
-   /* background-image: url('background.jpg');  image is named backround.jpg found in static folder */
-    background-size: cover; /* Cover the entire area */
-    background-repeat: no-repeat;
-    opacity: 0.6; /* Adjusting opacity as needed */
-    z-index: 0; /* Places the image behind the form */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease;
+    position: relative;
+    z-index: 1;
 }
 
 label, input {
@@ -46,75 +32,85 @@ label, input {
 }
 
 input[type="file"], input[type="number"] {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 10px;
+    border: 1px solid #5c6370;
+    border-radius: 8px;
+    background-color: #525966;
+    color: #e0e0e0;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+input[type="file"]:focus, input[type="number"]:focus {
+    border-color: #ffb74d;
+    background-color: #6a7383;
 }
 
 button {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 15px;
+    background-color: #ffb74d;
+    color: #282c34;
+    padding: 12px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     width: 100%;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
-    background-color: #0056b3; /* Darker blue on hover */
-    transform: translateY(-2px); /* Slight vertical lift */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+    background-color: #ff9800;
 }
 
 #result {
-    /* width: 400px;
-    margin: 20px auto;
-    padding: 10px;
-    background-color: #e9ecef;
-    border-radius: 4px;
-    text-align: center; */
-
-    margin-top: 20px; /* Add space between button and result */
+    margin-top: 20px;
     padding: 15px;
-    background-color: #f0f8ff; /* Light blue background */
-    border: 1px solid #dbf6ffde; /* Light blue border */
-    border-radius: 4px;
+    background-color: #4a515d;
+    border-radius: 8px;
     text-align: center;
-    font-weight: bold; /* Make the text bold */
-    font-size: 1.1em; /* Increase font size */
-    color: #333; /* Darker text color */
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #ffb74d;
+    transition: background-color 0.3s ease;
 }
 
-/*animation for advance compare filed
-#advancedInputs {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.9s ease-in-out; /* Smooth transition 
+/* Adding the background image */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00000009;
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+    z-index: -1;
 }
 
-#advancedInputs.show {
-    max-height: 500px; /* Adjust as needed 
-}*/
+/* Advanced Options Styles */
+.advanced-toggle {
+    cursor: pointer;
+    color: #ffb74d;
+    font-size: 0.9em;
+    margin-top: 5px; /* Reduced margin */
+}
 
-#advancedInputs {
+.advanced-inputs {
     display: none;
     margin-top: 10px;
-    position: relative;
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center; /* Center elements horizontally */
+    border: 1px solid #5c6370;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #4a515d;
 }
 
-#advancedInputs > div:first-child { /* Select the flex container */
-    display: flex;
-    justify-content: center; /* Center flex items horizontally */
+.reset-defaults {
+    cursor: pointer;
+    color: #ffb74d;
+    font-size: 1.2em;
+    text-align: right;
 }
 
-#advancedInputs > div:first-child > div { /* Select flex items */
-    margin: 0 5px; /* Add some horizontal margin between items */
+.compare-button-container {
+    margin-top:20px;
 }
-

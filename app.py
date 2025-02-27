@@ -1,16 +1,16 @@
-from flask import Flask, render_template, request, jsonify, url_for #Added url_for
+from flask import Flask, render_template, request, jsonify, url_for
 import hashlib
 import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-import PyPDF2
+import fitz # PyMuPDF library
+#import PyPDF2
 import docx
-from werkzeug.exceptions import RequestEntityTooLarge #Import exception
+from werkzeug.exceptions import RequestEntityTooLarge
 
 app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # 4MB limit #Upload a max of 4MB for comparison
-
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # 4MB limit
 
 # Download NLTK resources (do this once, if needed)
 try:
@@ -71,15 +71,18 @@ def read_file(file):
         return file.read().decode('utf-8')
     elif filename.lower().endswith('.pdf'):
         try:
-            pdf_reader = PyPDF2.PdfReader(file.read())
+            pdf_document = fitz.open(stream=file.read(), filetype="pdf")
             text = ""
-            for page in pdf_reader.pages:
-                text += page.extract_text() or ""
+            for page in pdf_document:
+                text += page.get_text()
+            pdf_document.close()  # Close the document
+            print(f"Extracted PDF text: {text}") # Debugging
             return text
         except Exception as e:
             return f"Error reading PDF: {e}"
     elif filename.lower().endswith('.docx'):
         try:
+            import docx #import docx here to prevent circular dependency issues.
             doc = docx.Document(file.read())
             text = ""
             for paragraph in doc.paragraphs:
@@ -89,7 +92,6 @@ def read_file(file):
             return f"Error reading DOCX: {e}"
     else:
         return "Unsupported file type"
-    
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

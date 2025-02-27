@@ -7,98 +7,70 @@
 <body>
     <h1>Plagiarism Police</h1>
     <form id="uploadForm" enctype="multipart/form-data">
-        <input type="hidden" name="advancedToggleUsed" id="advancedToggleUsed" value="false">
+        Document 1: <input type="file" name="file1" accept=".txt,.pdf" required><br><br>
+        Document 2: <input type="file" name="file2" accept=".txt,.pdf" required><br>
 
-        <label for="file1">Document 1:</label>
-        <input type="file" name="file1" id="file1" accept=".pdf,.doc,.docx,.txt" required><br><br>
-
-        <label for="file2">Document 2:</label>
-        <input type="file" name="file2" id="file2" accept=".pdf,.doc,.docx,.txt" required><br><br>
-
-        <div style="margin-top: -38px;">
-            <div id="advancedToggle" style="cursor: pointer; color: blue; font-size: 0.9em;">
-                Advanced Comparison <span id="toggleIcon">&#9660;</span>
-            </div>
-
-            <div id="advancedInputs" style="display: none; margin-top: 10px; position: relative;">
-    <div style="display: flex;">
-        <div>
-            <label for="windowSize" style="font-size: 0.7em;">Window Size:</label>
-            <input type="number" name="windowSize" id="windowSize" value="20" style="width: 80px; font-size: 0.9em;">
-        </div>
-        <div style="margin-left: 10px;">
-            <label for="threshold" style="font-size: 0.7em;">Threshold (0-1):</label>
-            <input type="number" name="threshold" id="threshold" value="0.8" step="0.01" style="width: 80px; font-size: 0.9em;">
-        </div>
-    </div>
-
-    <div id="resetDefaults" style="position: absolute; top: 0; right: 0; cursor: pointer; font-size: 1.2em;">
-        &#10227;
-    </div>
-</div>
+        <div id="advancedToggle" class="advanced-toggle">
+            Advanced Options <span id="toggleIcon">&#9660;</span>
         </div>
 
-        <div style="margin-top: 30px; text-align: center;">
-            <button type="submit" style="padding: 12px 25px; font-size: 1.1em; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Compare</button>
+        <div id="advancedInputs" class="advanced-inputs">
+            <div id="resetDefaults" class="reset-defaults">&#10227;</div>
+            Text block Size: <input type="number" name="window_size" id="window_size" value="20" required><br><br>
+            Sensitivity (0-1): <input type="number" name="threshold" id="threshold" value="0.8" required><br><br>
+            
         </div>
 
-        <div id="result" style="margin-top: 20px;"></div>
+        <div class="compare-button-container">
+            <button type="submit">Compare</button>
+        </div>
+
+        <div id="result"></div>
     </form>
-
     <script>
-        // Event listener for Advanced Comparison toggle
+        // Advanced comparison toggle logic
         document.getElementById('advancedToggle').addEventListener('click', function() {
             const advancedInputs = document.getElementById('advancedInputs');
             const toggleIcon = document.getElementById('toggleIcon');
 
-            // Toggle visibility of advanced inputs and update toggle icon
             if (advancedInputs.style.display === 'none') {
                 advancedInputs.style.display = 'block';
                 toggleIcon.innerHTML = '&#9650;';
-                document.getElementById('advancedToggleUsed').value = 'true';
             } else {
                 advancedInputs.style.display = 'none';
                 toggleIcon.innerHTML = '&#9660;';
-                document.getElementById('advancedToggleUsed').value = 'false';
             }
         });
 
-        // Event listener for Reset to Defaults button
+        // Reset to default values logic
         document.getElementById('resetDefaults').addEventListener('click', function() {
-            // Reset window size and threshold inputs to default values
-            document.getElementById('windowSize').value = '20';
+            document.getElementById('window_size').value = '20';
             document.getElementById('threshold').value = '0.8';
         });
 
-        // Event listener for form submission
+        // Form submission logic
         document.getElementById('uploadForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
-            const formData = new FormData(this); // Create FormData object from the form
+            event.preventDefault();
+            const formData = new FormData(this);
 
-            // Send the form data to the server using fetch API
             fetch('/', {
                 method: 'POST',
                 body: formData
             })
             .then(response => {
-                // Check if the response is not OK (e.g., 413 error)
                 if (!response.ok) {
-                    // Parse JSON error response and throw an error
                     return response.json().then(errorData => {
                         throw new Error(errorData.error);
                     });
                 }
-                // Parse JSON response if it's OK
                 return response.json();
             })
             .then(data => {
-                // Display comparison results
                 document.getElementById('result').innerHTML = `
                     <p>Similarity: ${data.similarity_score.toFixed(2)}. ${data.are_similar ? 'Oh snap!!! Documents are similar' : 'Documents are not similar'}.</p>
                 `;
             })
             .catch(error => {
-                // Display error message in case of errors
                 document.getElementById('result').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
             });
         });
