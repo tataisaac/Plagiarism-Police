@@ -7,6 +7,7 @@ Plagiarism Police 1.0 is a user-friendly tool for detecting plagiarism in PDF, D
 
 **Developer:** TATA I. FOMBANG  
 **Email:** tifombang@gmail.com
+**Cell:** +237 679906588
 
 ## Features
 - Compare two files for plagiarism
